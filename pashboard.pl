@@ -111,6 +111,20 @@ my $num_args = $#ARGV + 1;
 
 print "\nLoading...\n";
 
+my @section1FileList = ("nlp/nlp_users.sql",
+                   #"nlp/nlp_purchases.sql",
+                   #"nlp/nlp_chargeorders.sql",
+                   #"nlp/nlp_chargeordersOK.sql",
+                   #"nlp/nlp_chargeordersKO.sql",
+                   "nlp/nlp_chargeordersPending.sql");
+
+my @section2FileList = ("gea/soap_request_ACK.sql",
+                   #"gea/soap_request_NACK.sql",
+                   #"gea/soap_request_DUP.sql",
+                   #"gea/products_tipp.sql",
+                   #"gea/products_kosmo.sql",
+                   "gea/ticket.sql"
+                   );
 
 my @section1ResultText = ();
 my @section2ResultText = ();
