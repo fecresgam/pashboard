@@ -5,7 +5,7 @@ package Dashboard;
 
 # Create a config
 my $Config = Config::Tiny->new;
-$Config = Config::Tiny->read( 'dashboard.ini', 'utf8' );
+$Config = Config::Tiny->read( 'pashboard.ini', 'utf8' );
 
 # Reading properties
 $globalHeader = $Config->{_}->{globalheader};
@@ -44,8 +44,8 @@ sub getPasswordFromUser
   return $password;
 }
 
-# Sub executeNlpSqlFile
-sub executeNlpSqlFile
+# Sub executeSection1SqlFile
+sub executeSection1SqlFile
 {
   my $fileUri = $_[0];
   return executeSqlFile($Dashboard::section1DBUser,
@@ -54,8 +54,8 @@ sub executeNlpSqlFile
                         $fileUri)
 }
 
-# Sub executeGeaSqlFile
-sub executeGeaSqlFile
+# Sub executeSection2SqlFile
+sub executeSection2SqlFile
 {
   my $fileUri = $_[0];
   return executeSqlFile($Dashboard::section2DBUser,
@@ -99,32 +99,25 @@ sub printDataLine
 
 
 my $refreshTimeInSeconds = 1;
-my $num_args = $#ARGV + 1;
 
-
-
-
-#$Dashboard::section1DBPass = getPasswordFromUser("NLP DB");
-#$Dashboard::section2DBPass = getPasswordFromUser("GEA DB");
+#$Dashboard::section1DBPass = getPasswordFromUser("section 1");
+#$Dashboard::section2DBPass = getPasswordFromUser("section 2");
 
 
 
 print "\nLoading...\n";
 
-my @section1FileList = ("nlp/nlp_users.sql",
-                   #"nlp/nlp_purchases.sql",
-                   #"nlp/nlp_chargeorders.sql",
-                   #"nlp/nlp_chargeordersOK.sql",
-                   #"nlp/nlp_chargeordersKO.sql",
-                   "nlp/nlp_chargeordersPending.sql");
 
-my @section2FileList = ("gea/soap_request_ACK.sql",
-                   #"gea/soap_request_NACK.sql",
-                   #"gea/soap_request_DUP.sql",
-                   #"gea/products_tipp.sql",
-                   #"gea/products_kosmo.sql",
-                   "gea/ticket.sql"
-                   );
+
+my $section1filesraw = $Config->{section1}->{filelist};
+my @section1FileList = split (/,/, $section1filesraw);
+
+my $section2filesraw = $Config->{section2}->{filelist};
+my @section2FileList = split (/,/, $section2filesraw);
+
+
+
+
 
 my @section1ResultText = ();
 my @section2ResultText = ();
@@ -136,12 +129,12 @@ while(1)
 
   foreach (@section1FileList)
   {
-    push (@section1ResultText, executeNlpSqlFile($_));
+    push (@section1ResultText, executeSection1SqlFile($_));
   }
 
   foreach (@section2FileList)
   {
-    push (@section2ResultText, executeGeaSqlFile($_));
+    push (@section2ResultText, executeSection2SqlFile($_));
   }
 
   print BOLD BLUE  "[Description]\t[1 Min]\t[5 Min]\t[10 Mi]\t[60 Mi]\t[Last Insert]", RESET, "";
@@ -158,15 +151,6 @@ while(1)
     printDataLine ($_);
   }
   print BOLD BLUE  $Dashboard::section2Footer, RESET, "\n";
-
-
-#$|=1;
-#foreach (1..10) {
-#        print ".";
-#        sleep 1;
-#        }
-#print "\n";
-
 
   sleep($refreshTimeInSeconds);
 };
